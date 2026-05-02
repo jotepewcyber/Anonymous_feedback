@@ -28,7 +28,7 @@ function userDashboard() {
   const [isSwitchLoading,setisSwitchLoading]=useState(false)
   
   
-  const handleDeleteMsg=(messageId:string)=>{
+  const handleDeleteMsg=async (messageId:string)=>{
     setMessages(messages.filter((message)=>String(message._id)!==messageId))
   }
 
@@ -45,8 +45,9 @@ function userDashboard() {
   const fetchAcceptMessages=useCallback(async()=>{
     setisSwitchLoading(true)
     try {
-      const response = await axios.get<ApiResponse>(`/api/accept-messages`)
-      setValue('isAcceptingMsg', response.data.success)
+      const response = await axios.get<ApiResponse>(`/api/accept-message`)
+      
+      // setValue('isAcceptingMsg', response.data.success)
     } catch (error) { 
       const axiosError=error as AxiosError<ApiResponse>
       toast.error('Error',{description:axiosError.response?.data.message || 'Failed to fetch message settings'})
@@ -61,12 +62,14 @@ function userDashboard() {
     setisSwitchLoading(false)
     try {
       const response=await axios.get<ApiResponse>(`/api/get-messages`)
-      setMessages(response.data.messages || [])
+      setMessages(response.data.messages || [])       
 
       if(refresh){
-        toast.error('Refreshed Messages',{description: 'Showing latest messages'})
+        toast.success('Refreshed Messages',{description: 'Showing latest messages'})
       }
-    } catch (error) { 
+    }   
+
+    catch (error) { 
       const axiosError=error as AxiosError<ApiResponse>
       toast.error('Error',{description:axiosError.response?.data.message || 'Failed to fetch message settings'})
     }
@@ -88,10 +91,10 @@ fetchAcceptMessages()
   //handle switch change
 const handleSwitchChange=async()=>{
   try {
-   const response= await axios.post<ApiResponse>(`/api/accept-messages`,{
+   const response= await axios.post<ApiResponse>(`/api/accept-message`,{
       acceptMessages: !acceptMessages
     })
-    setValue('isAcceptingMsg',!acceptMessages)
+     setValue('isAcceptingMsg',!acceptMessages)
     toast(response.data.message)
   } catch (error) {
     console.log(error)
@@ -102,7 +105,7 @@ const handleSwitchChange=async()=>{
 
 const username=session?.user?.username 
 //TODO: DO MORE RESEARCH
-const baseUrl=`${window.location.protocol}//${window.location.host}`
+const baseUrl=process.env.NEXT_PUBLIC_BASE_URL
 const profileUrl=`${baseUrl}/u/${username}`
 
 
@@ -162,13 +165,15 @@ if(!session || !session.user){
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         {messages.length > 0 ? (
           messages.map((message, index) => (
+            
             <MessageCard
               key={String(message._id)}
               message={message}
               onMessageDelete={handleDeleteMsg}
-            />
+            />    
           ))
-        ) : (
+        ) 
+       : (
           <p>No messages to display.</p>
         )}
       </div>

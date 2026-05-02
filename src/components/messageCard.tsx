@@ -28,28 +28,43 @@ import { Message } from "@/model/Usermodel";
 import axios from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 
 type messageCardProp={
     message:Message;
     onMessageDelete:(messageId:string)=>void;
 }
 const messageCard=({message,onMessageDelete}:messageCardProp) => {
+const router = useRouter();
+
 
 
 const handleDeleteConfirm=async ()=>{
-   const response=await axios.delete<ApiResponse>(`/api/delete-message/${message._id}`)
-   toast(response.data.message)
+   const response=await axios.delete<ApiResponse>(`/api/delete-message/`,{
+      data:{messageId:message._id}
+   })
+   toast.message(response.data.message)
+    onMessageDelete(String(message._id) );
 }
     return (
    <Card>
-  <CardHeader>
-    <CardTitle>Card Title</CardTitle>
+  <CardHeader className="relative">
+    <CardTitle className="text-2xl font-semibold">{message.content}</CardTitle>
 
   
 
     <AlertDialog>
   <AlertDialogTrigger asChild>
-    <Button variant="destructive"><X className='h-5 w-5'/></Button>
+   
+    <Button variant="destructive"
+    size="icon"
+    className='absolute top-2 right-2 h-8 w-19 '
+    >
+     <X className="h-4 w-4" />
+     </Button>
+ 
   </AlertDialogTrigger>
   <AlertDialogContent>
     <AlertDialogHeader>
@@ -61,22 +76,17 @@ const handleDeleteConfirm=async ()=>{
     </AlertDialogHeader>
     <AlertDialogFooter>
       <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction onClick={handleDeleteConfirm}>Continue</AlertDialogAction>
+      <AlertDialogAction onClick={() => handleDeleteConfirm()}>Continue</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>
 
 
 
-    <CardDescription>Card Description</CardDescription>
-    <CardAction>Card Action</CardAction>
+    <CardDescription>{new Date(message.createdAt).toLocaleString()}</CardDescription>
+   
   </CardHeader>
-  <CardContent>
-    <p>Card Content</p>
-  </CardContent>
-  <CardFooter>
-    <p>Card Footer</p>
-  </CardFooter>
+
 </Card>
   )
 }
