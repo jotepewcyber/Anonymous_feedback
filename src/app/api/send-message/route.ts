@@ -16,11 +16,13 @@ export async function POST(req:Request){
 if(!user?.isAcceptingMsg){
 return Response.json({success:false,message:"User is not accepting messages at the moment"}, {status:403})
 } 
-const newMessage={content,createdAt:new Date()
-    
-}
-user.messages.push(newMessage as Message)
+const newMessage={content,createdAt:new Date()}
+
+user.message.push(newMessage as Message)
 //to ensure content goes as message type 
+
+await user.save()
+//Save the changes to the database
 
 return Response.json({success:true,message:"Message sent successfully"}, {status:200})
 

@@ -4,16 +4,17 @@ import {getServerSession} from "next-auth/next"
 import { authOptions } from "../auth/[...nextauth]/options";
 import {User} from "next-auth";
 
-async function POST(req:Request){
+export async function POST(req:Request){
     await dbConnect();
     const session=await getServerSession(authOptions)
     const user=session?.user 
 
-    if(!session || !user){
-        return Response.json({
+    if(!session || !user){     
+        return Response.json({  
 
             success:false,
-            message:"You must be logged in to accept messages"
+            message:"You must be logged in to accept messages",
+          
         },{status:401})
     }
     const userId=user._id
@@ -32,7 +33,7 @@ async function POST(req:Request){
     }
    return Response.json({
     success:true,
-    message:'Successfully updated user status to accept messages',
+    message:`Successfully updated user status to ${acceptMessages ? 'accept' : 'deny'} messages`,
     updatedUser
 },
  {status:200}
@@ -42,22 +43,22 @@ async function POST(req:Request){
      console.error('Failed to update user status to accept messages:', error);  
      return Response.json({success:false,message:'Failed to update user status to accept messages'}, {status:500}) 
    }
-
 }
 
 
 //This function is just to tell user whether he is accepting messages or not
 //SEE LINE 71
-async function GET(req:Request){
+export async function GET(req:Request){
      await dbConnect();
     const session=await getServerSession(authOptions)
     const user=session?.user 
 
     if(!session || !user){
-        return Response.json({
+        return Response.json({  
 
             success:false,
-            message:"You must be logged in to accept messages"
+            message:"You must be logged in to accept messages",
+          
         },{status:401})
     }
     const userId=user._id

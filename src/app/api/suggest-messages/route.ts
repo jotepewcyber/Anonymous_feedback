@@ -91,13 +91,13 @@
 // }
 
 import { NextResponse } from "next/server";
-export async function POST(req:Request){
+export async function GET(req:Request){
 
   try{
-    const prompt= "Create a list of three open-ended and engaging questions formatted as a single string. Each question should be separated by '||'. These questions are for an anonymous social messaging platform, like Qooh.me, and should be suitable for a diverse audience. Avoid personal or sensitive topics, focusing instead on universal themes that encourage friendly interaction. For example, your output should be structured like this: 'What's a hobby you've recently started?||If you could have dinner with any historical figure, who would it be?||What's a simple thing that makes you happy?'. Ensure the questions are intriguing, foster curiosity, and contribute to a positive and welcoming conversational environment.";
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+    const prompt= "Generate exactly 3 engaging questions within 7 words length each. Return ONLY in this format:Question1||Question2||Question3, No extra text, no numbering.";
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
-        method:"POST",
+        method:"POST", 
         headers:{
           'Content-Type':'application/json'
         },
@@ -109,19 +109,19 @@ export async function POST(req:Request){
         },
       ],
           generationConfig: {
-        responseMimeType: "text/plain",
-        maxOutputTokens: 150,
+       
+        maxOutputTokens: 200,
         temperature: 0.6,
       },
       })
   })
 
 const data=await res.json();
-
+console.log('Raw response from Gemini API:', data);
 //extract text safwly
-const text=data?.candidates?.[0]?.content?.parts?.[0]?.text || "Failed to generate suggestions";
+const text=data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("").trim() || "Failed to generate suggestions";
 
-return NextResponse.json({success:true,suggestions:text})
+return NextResponse.json({success:true,message:text})
 
 }
 catch(error:any){

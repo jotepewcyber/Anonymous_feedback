@@ -24,12 +24,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
 
           <body>
-				<AuthProvider>
-					<Navbar />
+				{/* <AuthProvider>
+					<Navbar /> */}
             	{children}
-				
-					<Toaster />
-				</AuthProvider>
+				 <Toaster />
+					{/* <Toaster />
+				</AuthProvider> */} 
           </body>
 		 </html>
 	);

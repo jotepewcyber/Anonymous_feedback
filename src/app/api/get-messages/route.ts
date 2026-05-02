@@ -26,9 +26,9 @@ export async function GET(req:Request){
 
    const user=await UserModel.aggregate([
     {$match:{_id:userId}},
-    {$unwind:'$messages'},
-    {$sort:{'messages.createdAt':-1}},
-    {$group:{_id:'$id',messages:{$push:'$messages'}}}
+    {$unwind:'$message'},
+    {$sort:{'message.createdAt':-1}},
+    {$group:{_id:'$_id',message:{$push:'$message'}}}
    ])
    //Only 1 object is created having multiple messages
 
@@ -38,9 +38,11 @@ export async function GET(req:Request){
             message:"User not found"
         },{status:401} )
    }
+  
  return Response.json({
             success:true,
-            message:user[0].messages  //user is an array having 1 object ie. user model with id as userId having multiple messages so just grab all messages
+            messages:user[0]?.message || []
+            //user is an array having 1 object ie. user model with id as userId having multiple messages so just grab all messages
         },{status:201})
 
    } catch (error) {
