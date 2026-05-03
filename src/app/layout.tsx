@@ -23,13 +23,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
 		<html lang="en">
 
 
-          <body>
+          <body >
 				{/* <AuthProvider>
 					<Navbar /> */}
             	{children}
 				 <Toaster />
 					{/* <Toaster />
-				</AuthProvider> */} 
+				</AuthProvider>  */}
           </body>
 		 </html>
 	);
